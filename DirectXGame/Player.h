@@ -60,8 +60,8 @@ public:
 	
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
-	
-	/// <summary>
+	float GetAttackTime() { return AttackTime; }
+/// <summary>
 /// 
 /// </summary>
 	~Player();
@@ -99,5 +99,10 @@ private:
 	Vector3 hammerPosition = {0.0f, 0.0f, 0.0f};
 	//モーション変数
 	float floatingParameter_ = 0.0f;
+	const uint16_t period = 120;
+	const uint16_t attckPeriod = 120;
+	//アタックモーション
+	bool AttackFlag = 0;
+	float AttackTime = 0;
 	
 };

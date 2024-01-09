@@ -81,20 +81,39 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+
+	switch (sceneMode_) {
+	case 0:
+		GamePlayUpdate();
+		break;
+	case 1:
+		TitleUpdate();
+		break;
+	case 2:
+		GameOverUpdate();
+		break;
+	case 3:
+		GameClearUpdate();
+		break;
+	}
+}
+
+
+void GameScene::GamePlayUpdate() {
 	player_->Update(); 
 	skydome_->Update();
 	enemy_->Update();
 	ground_->Update();
-	
+	OnCollision();
 	
 	
 	debugCamera_->Update();
 	//デバックカメラのifdef
 
 	#ifdef _DEBUG
-	if (input_->TriggerKey(DIK_LSHIFT) && isDebugCameraActive_ == false) {
+	if (input_->TriggerKey(DIK_RSHIFT) && isDebugCameraActive_ == false) {
 		isDebugCameraActive_ = true;
-	} else if (input_->TriggerKey(DIK_LSHIFT) && isDebugCameraActive_ == true) {
+	} else if (input_->TriggerKey(DIK_RSHIFT) && isDebugCameraActive_ == true) {
 		isDebugCameraActive_ = false;
 		
 	}
@@ -126,7 +145,54 @@ void GameScene::Update() {
 	
 }
 
-	void GameScene::Draw() {
+void GameScene::OnCollision() {
+
+	    // 敵の腕とプレイヤーの判定
+	  
+		    float dx = player_->GetWorldPosition().x - enemy_->GetWorldPosition().x;
+		    float dz = player_->GetWorldPosition().z - enemy_->GetWorldPosition().z;
+		    float dy = player_->GetWorldPosition().y - enemy_->GetWorldPosition().y;
+		    float dist = dx * dx + dy * dy + dz * dz;
+		    dist = sqrtf(dist);
+		    // 4 = 二つの円の半径足したもの
+		    if (dist <= 4) {
+		    sceneMode_ = 3;
+		    }
+	    
+}
+
+void GameScene::TitleUpdate() {
+
+	if (input_->TriggerKey(DIK_SPACE)) {
+		// リセット
+		sceneMode_ = 0;
+		
+	}
+}
+
+void GameScene::GameOverUpdate() {
+	if (input_->TriggerKey(DIK_SPACE)) {
+		Initialize();
+		
+		sceneMode_ = 1;
+		Reset();
+	}
+}
+void GameScene::GameClearUpdate() {
+	if (input_->TriggerKey(DIK_SPACE)) {
+		Initialize();
+		
+		sceneMode_ = 1;
+		Reset();
+	}
+}
+void GameScene::TitleDraw2DNear() { /*titleSprite_->Draw();*/ }
+
+void GameScene::GameOverDraw2DNear() { /*gameOverSprite_->Draw();*/ }
+
+void GameScene::GameClearDraw2DNear() { /*gameClearSprite_->Draw();*/ }
+
+void GameScene::Draw() {
 
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
@@ -164,7 +230,15 @@ void GameScene::Update() {
 
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(commandList);
-
+	if (sceneMode_ == 1) {
+		TitleDraw2DNear();
+	}
+	if (sceneMode_ == 2) {
+		GameOverDraw2DNear();
+	}
+	if (sceneMode_ == 3) {
+		GameClearDraw2DNear();
+	}
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 
@@ -175,5 +249,8 @@ void GameScene::Update() {
 
 
 }
-
+void GameScene::Reset() {
+	// シーン切り替え
+	sceneMode_ = 1;
+}
 	

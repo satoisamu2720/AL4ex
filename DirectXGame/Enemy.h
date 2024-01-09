@@ -71,7 +71,7 @@ public:
 	
 	const ViewProjection* viewProjection_ = nullptr;
 
-	Vector3 enemyPosition = {0, 0, 0};
+	Vector3 enemyPosition = {10, 0, 10};
 	Vector3 bodyPosition = {0, 0, 0};
 	Vector3 l_amrPosition = {-0.8f, 1, 0};
 	Vector3 r_amrPosition = {0.8f, 1, 0};

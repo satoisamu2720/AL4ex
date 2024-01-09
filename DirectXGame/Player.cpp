@@ -25,13 +25,14 @@ void Player::Initialize(
 
 	worldTransformL_arm_.rotation_.x = 0.5f;
 	worldTransformR_arm_.rotation_.x = 0.5f;
-
+	worldTransformHammer_.rotation_.x = 1.5f;
 
 	worldTransformBody_.parent_ = &worldTransform_;
 	worldTransformHead_.parent_ = &worldTransform_;
 	worldTransformL_arm_.parent_ = &worldTransform_;
 	worldTransformR_arm_.parent_ = &worldTransform_;
-	worldTransformHammer_.parent_ = &worldTransform_;
+	worldTransformHammer_.parent_ = &worldTransformR_arm_;
+	
 	//worldTransformHead_.translation_ = {0.0f, 0.2f, 0.0f};
 
 	input_ = Input::GetInstance();
@@ -60,7 +61,19 @@ void Player::Update() {
 	} else if (input_->PushKey(DIK_D)) {
 		move_.x += kCharacterSpeed;
 	}
-	if (input_->PushKey(DIK_SPACE)){
+	if (input_->PushKey(DIK_LSHIFT)){
+		AttackFlag = 1;
+		worldTransformL_arm_.rotation_.x = -1.5f;
+		worldTransformR_arm_.rotation_.x = -1.5f;
+	}
+	if (AttackFlag == 1) {
+		AttackTime ++;
+	}
+	if (AttackTime == 120) {
+		worldTransformL_arm_.rotation_.x = 0.0f;
+		worldTransformR_arm_.rotation_.x = 0.0f;
+		AttackFlag = 0;
+		AttackTime = 0;
 		
 	}
 
@@ -111,7 +124,10 @@ void Player::Draw(ViewProjection view) {
 	models_[1]->Draw(worldTransformHead_, view);
 	models_[2]->Draw(worldTransformL_arm_, view);
 	models_[3]->Draw(worldTransformR_arm_, view);
-	models_[4]->Draw(worldTransformHammer_, view);
+	if (AttackFlag == 1) {
+		models_[4]->Draw(worldTransformHammer_, view);
+	}
+	
 }
 void Player::OnCollision() {}
 
@@ -129,19 +145,35 @@ Vector3 Player::GetWorldPosition() {
 void Player::InitializeFloatingGimmick() { floatingParameter_ = 1.0f; }
 
 void Player::UpdateFloatingGimmick() {
-	const uint16_t period = 120;
-	const float step = 2.0f * (float)M_PI / period;
+	if (AttackFlag == 0) {
+		
+		const float step = 2.0f * (float)M_PI / period;
 
-	floatingParameter_ += step;
-	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * (float)M_PI);
+		floatingParameter_ += step;
+		floatingParameter_ = std::fmod(floatingParameter_, 2.0f * (float)M_PI);
 
-	const float amplitude = 0.02f;
-	worldTransform_.translation_.y += std::sin(floatingParameter_) * amplitude;
-	//worldTransformHead_.translation_.y = std::sin(floatingParameter_) * amplitude;
-	worldTransformL_arm_.rotation_.x+= std::cos(floatingParameter_) * amplitude;
-	worldTransformR_arm_.rotation_.x += std::cos(floatingParameter_) * amplitude;
+		const float amplitude = 0.02f;
+		worldTransform_.translation_.y += std::sin(floatingParameter_) * amplitude;
+		// worldTransformHead_.translation_.y = std::sin(floatingParameter_) * amplitude;
+		worldTransformL_arm_.rotation_.x += std::cos(floatingParameter_) * amplitude;
+		worldTransformR_arm_.rotation_.x += std::cos(floatingParameter_) * amplitude;
+	}
 }
 void Player::DrawFloatingGimmick() {}
 
 
-void Player::BehaviorRootUpdate(){}
+void Player::BehaviorRootUpdate() {
+	if (AttackFlag == 1) {
+		
+
+		
+		const float step = 2.0f * (float)M_PI / attckPeriod;
+
+		floatingParameter_ += step;
+		floatingParameter_ = std::fmod(floatingParameter_, 2.0f * (float)M_PI);
+
+		const float Attckamplitude = 0.05f;
+		worldTransformL_arm_.rotation_.x += std::cos(floatingParameter_) * Attckamplitude;
+		worldTransformR_arm_.rotation_.x += std::cos(floatingParameter_) * Attckamplitude;
+	}
+}

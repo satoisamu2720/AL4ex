@@ -54,7 +54,15 @@ public: // メンバ関数
 	/// <summary>
 	/// 
 	/// </summary>
-	
+	void GamePlayUpdate();
+	void TitleUpdate();
+	void GameOverUpdate();
+	void GameClearUpdate();
+	void OnCollision();
+	void Reset();
+	void TitleDraw2DNear();
+	void GameOverDraw2DNear();
+	void GameClearDraw2DNear();
 
 private: // メンバ変数
 	// テクスチャハンドル
@@ -75,7 +83,15 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelEnemyR_arm_;
 	std::unique_ptr<Model> modelHammer_;
 	
-	
+	uint32_t titleTextureHandle_ = 0;
+	Sprite* titleSprite_ = nullptr;
+
+	uint32_t gameClearTextureHandle_ = 0;
+	Sprite* gameClearSprite_ = nullptr;
+
+	uint32_t gameOverTextureHandle_ = 0;
+	Sprite* gameOverSprite_ = nullptr;
+
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
 
@@ -102,4 +118,6 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	// シーン切り替え
+	int sceneMode_ = 1;
 };
